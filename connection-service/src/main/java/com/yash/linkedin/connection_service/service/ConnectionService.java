@@ -1,5 +1,6 @@
 package com.yash.linkedin.connection_service.service;
 
+import com.yash.linkedin.connection_service.auth.UserContextHolder;
 import com.yash.linkedin.connection_service.dto.PersonDTO;
 import com.yash.linkedin.connection_service.entity.Person;
 import com.yash.linkedin.connection_service.repository.ConnectionRepository;
@@ -15,7 +16,8 @@ public class ConnectionService {
     private final ConnectionRepository connectionRepository;
     private final ModelMapper modelMapper;
 
-    public List<PersonDTO> getFirstDegreeConnection(Long userId) {
+    public List<PersonDTO> getFirstDegreeConnection() {
+        Long userId = UserContextHolder.getCurrentUserId();
         List<Person> connection = connectionRepository.getFirstDegreeConnections(userId);
          return connection.stream().map(connection1 -> modelMapper.map(connection1, PersonDTO.class)).toList();
 

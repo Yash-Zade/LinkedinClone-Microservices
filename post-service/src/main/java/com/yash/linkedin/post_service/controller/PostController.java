@@ -1,5 +1,6 @@
 package com.yash.linkedin.post_service.controller;
 
+import com.yash.linkedin.post_service.auth.UserContextHolder;
 import com.yash.linkedin.post_service.dto.PostCreationDTO;
 import com.yash.linkedin.post_service.dto.PostDTO;
 import com.yash.linkedin.post_service.service.PostService;
@@ -20,7 +21,8 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<PostDTO> createPost(@RequestBody PostCreationDTO postDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<PostDTO> createPost(@RequestBody PostCreationDTO postDto) {
+        Long userId = UserContextHolder.getCurrentUserId();
         PostDTO createdPost = postService.createPost(postDto, 1L);
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }

@@ -1,4 +1,6 @@
 spring.application.name: gateway-service
+jwt:
+  secretKey: fghfnxcmh78$(94905%*(8qeh3&#9(123470)wehf^&*ui54y89^09pa&*(ixjhcgio)6&S%7q
 eureka:
   instance:
     hostname: localhost
@@ -22,3 +24,12 @@ spring:
             - Path=/api/v1/posts/**
           filters:
             - StripPrefix=2
+            - name: AuthenticationFilter
+
+        - id: connection-service
+          uri: lb://CONNECTION-SERVICE
+          predicates:
+            - Path=/api/v1/connection/**
+          filters:
+            - StripPrefix=2
+            - name: AuthenticationFilter
