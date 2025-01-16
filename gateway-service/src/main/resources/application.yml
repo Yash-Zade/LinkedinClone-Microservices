@@ -11,14 +11,14 @@ spring:
     gateway:
       routes:
         - id: user-service
-          uri: lb://USER-SERVICE
+          uri: ${USER_SERVICE_URI:lb://USER-SERVICE}
           predicates:
             - Path=/api/v1/users/**
           filters:
             - StripPrefix=2
 
         - id: post-service
-          uri: lb://POST-SERVICE
+          uri: ${POST_SERVICE_URI:lb://POST-SERVICE}
           predicates:
             - Path=/api/v1/posts/**
           filters:
@@ -26,7 +26,7 @@ spring:
             - name: AuthenticationFilter
 
         - id: connection-service
-          uri: lb://CONNECTION-SERVICE
+          uri: ${CONNECTION_SERVICE_URI:lb://CONNECTION-SERVICE}
           predicates:
             - Path=/api/v1/connection/**
           filters:
@@ -34,7 +34,7 @@ spring:
             - name: AuthenticationFilter
 
         - id: media-service
-          uri: lb://MEDIA-SERVICE
+          uri: ${MEDIA_SERVICE_URI:lb://MEDIA-SERVICE}
           predicates:
               - Path=/api/v1/media/**
           filters:

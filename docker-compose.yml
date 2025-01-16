@@ -83,6 +83,18 @@ services:
     networks:
       - linkedin-network
 
+  media-db:
+    image: postgres
+    container_name: media-db
+    environment:
+      - POSTGRES_DB=MediaDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=0000
+    networks:
+      - linkedin-network
+    volumes:
+      - media-db-data:/var/lib/postgresql/data
+
   discovery-server:
     image: yashzade/linkedin-app-discovery-server
     container_name: discovery-server
@@ -90,6 +102,15 @@ services:
       - linkedin-network
     ports:
       - "8761:8761"
+
+  media-service:
+    image: yashzade/linkedin-app-media-service
+    container_name: media-service
+    networks:
+      - linkedin-network
+    depends_on:
+      - discovery-server
+      - media-db
 
   post-service:
     image: yashzade/linkedin-app-post-service
@@ -100,6 +121,7 @@ services:
       - discovery-server
       - post-db
       - kafka
+      - media-service
 
   user-service:
     image: yashzade/linkedin-app-user-service
@@ -150,3 +172,4 @@ volumes:
   post-db-data:
   user-db-data:
   connection-db-data:
+  media-db-data:
