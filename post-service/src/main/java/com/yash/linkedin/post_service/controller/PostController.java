@@ -1,17 +1,16 @@
 package com.yash.linkedin.post_service.controller;
 
 import com.yash.linkedin.post_service.auth.UserContextHolder;
+import com.yash.linkedin.post_service.client.MediaClient;
 import com.yash.linkedin.post_service.dto.PostCreationDTO;
 import com.yash.linkedin.post_service.dto.PostDTO;
 import com.yash.linkedin.post_service.service.PostService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -19,11 +18,13 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+    private final MediaClient mediaClient;
 
     @PostMapping
     public ResponseEntity<PostDTO> createPost(@RequestBody PostCreationDTO postDto) {
         Long userId = UserContextHolder.getCurrentUserId();
-        PostDTO createdPost = postService.createPost(postDto, 1L);
+        PostDTO createdPost = postService.createPost(postDto, userId);
+        createdPost.setMediaUrl(mediaClient.uploadFile(postDto.getFile(), createdPost.getId()));
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
 

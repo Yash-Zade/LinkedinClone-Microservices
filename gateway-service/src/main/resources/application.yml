@@ -1,11 +1,10 @@
 spring.application.name: gateway-service
 jwt:
   secretKey: fghfnxcmh78$(94905%*(8qeh3&#9(123470)wehf^&*ui54y89^09pa&*(ixjhcgio)6&S%7q
-eureka:
-  instance:
-    hostname: localhost
+
 server.port: 8080
-eureka.client.service-url.defaultZone: http://localhost:8761/eureka
+
+eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
 
 spring:
   cloud:
@@ -33,3 +32,11 @@ spring:
           filters:
             - StripPrefix=2
             - name: AuthenticationFilter
+
+        - id: media-service
+          uri: lb://MEDIA-SERVICE
+          predicates:
+              - Path=/api/v1/media/**
+          filters:
+              - StripPrefix=2
+              - name: AuthenticationFilter

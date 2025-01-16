@@ -1,5 +1,6 @@
 package com.yash.linkedin.post_service.service;
 
+import com.yash.linkedin.post_service.client.MediaClient;
 import com.yash.linkedin.post_service.dto.PostCreationDTO;
 import com.yash.linkedin.post_service.dto.PostDTO;
 import com.yash.linkedin.post_service.entity.Post;
@@ -23,12 +24,12 @@ public class PostService {
     private final ModelMapper modelMapper;
     private final PostsRepository postsRepository;
     private final KafkaTemplate<Long, PostCreatedEvent> postCreatedEventKafkaTemplate;
+    private final MediaClient mediaClient;
 
     public PostDTO createPost(PostCreationDTO postCreationDTO, Long userId){
         Post post = modelMapper.map(postCreationDTO,Post.class);
         post.setUserId(userId);
         Post savedPost = postsRepository.save(post);
-
         PostCreatedEvent postCreatedEvent =  PostCreatedEvent.builder()
                 .creatorId(userId)
                 .content(savedPost.getContent())
@@ -47,19 +48,11 @@ public class PostService {
         return modelMapper.map(post, PostDTO.class);
     }
 
-    public PostDTO updatePost(Map<String, Object> updates, Long postId) {
-        Post post = postsRepository.getPostsById(postId)
-                .orElseThrow(()-> new ResourceNotFoundException("Post not found with Id: "+postId));
-        updates.forEach((field, value) -> {
-            Field fieldToBeUpdated = ReflectionUtils.findRequiredField(Post.class,field);
-            fieldToBeUpdated.setAccessible(true);
-            ReflectionUtils.setField(fieldToBeUpdated,post,value);
-        });
-        return modelMapper.map(post, PostDTO.class);
-    }
-
     public List<PostDTO> getAllPosts(Long userId) {
         List<Post> posts = postsRepository.getPostsByUserId(userId);
-        return posts.stream().map((post) -> modelMapper.map(post, PostDTO.class)).toList();
+        return posts.stream()
+                .map(post -> modelMapper.map(post, PostDTO.class))
+                .peek(postDTO -> postDTO.setMediaUrl(mediaClient.getMediaUrl(postDTO.getId())))
+                .toList();
     }
 }

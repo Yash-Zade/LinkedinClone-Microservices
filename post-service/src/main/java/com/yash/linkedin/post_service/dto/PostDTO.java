@@ -10,4 +10,5 @@ public class PostDTO {
     private String content;
     private Long userId;
     private LocalDateTime createdAt;
+    private String mediaUrl;
 }
